@@ -1,0 +1,6 @@
+Some thoughts that occurred during implementation.
+
+ * It is practically required to use an actual file for logging, because the number of channels is only known
+   at the end, and it has to be specified at the very beginning, so one needs to be able to go back and re-write
+   that part of the file. I don't really see a need to know the number of channels from the header, so we could
+   just remove that.
