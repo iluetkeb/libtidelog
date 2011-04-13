@@ -5,6 +5,18 @@
 #include <string>
 #include <map>
 #include <stdint.h>
+#include <sys/time.h>
+
+/*
+ * This is an implementation of the TIDE log format, described in https://retf.info/svn/drafts/rd-0001.txt
+ * (in the version from 4th April 2011).
+ * It is intended primarily to demonstrate implementability of that specification.
+ *
+ * This code is provided as-is, without any guarantees of any kind, not even implied ones. In other words, use
+ * it at your own risk. It may be freely used for any purpose.
+ *
+ * Copyright (c) 2011 Ingo Lütkebohle <iluetkeb@techfak.uni-bielefeld.de>, Bielefeld University
+ */
 
 namespace tide { namespace log {
 	class BufferReference {
@@ -23,12 +35,22 @@ namespace tide { namespace log {
 
 		Channel(int id, uint32_t size) : id(id), data_size(size) {};
 	};
-	class Chunk {
-	private:
-		const int id;
-		const uint64_t start_filepos;
+	class Entry {
 	public:
-		Chunk(int id, uint64_t start_filepos);
+		const Channel c;
+		const timeval timestamp;
+		Entry(const Channel& c, const timeval& tv);
+	};
+
+	class Chunk {
+	public:
+		const int id, num_entries;
+		const off_t start_filepos;
+		timeval tv_start, tv_end;
+		
+		Chunk(int id, const off_t start_filepos);
+
+		void add_entry(const Entry& e);
 	};
 
 	class TIDELog {
@@ -36,12 +58,17 @@ namespace tide { namespace log {
 		FILE* logfile;
 		uint32_t num_chunks;
 		std::map<int, uint32_t> channel_sizes;
+		Chunk *current_chunk;
 
 		TIDELog(const TIDELog&); // not implemented to prevent copying
 		void write_small(uint8_t size, const void* data);
 		void write_array(uint32_t size, const void* data);
+		void write_timestamp(const timeval& tv);
 		void writeHeader(const char tag[4], uint64_t size);
 		void writeTIDE();
+		void writeCHUNK();
+		void start_chunk();
+		void finish_chunk();
 	public:
 		TIDELog(const std::string& logfile_name);
 		~TIDELog();
