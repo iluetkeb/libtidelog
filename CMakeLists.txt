@@ -3,6 +3,8 @@ PROJECT(libtidelog)
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
+#set(CMAKE_VERBOSE_MAKEFILE on)
+
 INCLUDE(FindPkgConfig)
 
 # add the automatically determined parts of the RPATH
@@ -18,6 +20,8 @@ SET(LIBDIR "${PREFIX}/lib")
 SET(DATADIR "${PREFIX}/share/${CMAKE_PROJECT_NAME}")
 SET(CFGDIR "${PREFIX}/etc/${CMAKE_PROJECT_NAME}")
 SET(IW_PLUGINDIR "${PREFIX}/lib/iceWing")
+
+set(CMAKE_CXX_FLAGS "-Wall -Werror")
 
 ### Some Options (static and editable) ###
 #OPTION(IW_DEBUG "En-/disables iceWing debug outputs" OFF)
@@ -45,13 +49,10 @@ SET(IW_PLUGINDIR "${PREFIX}/lib/iceWing")
 #  ${FTD_CFLAGS}
 #)
 
-SET(LIBTIDELOG_SOURCES src/tidelog.cpp)
+add_subdirectory(lib)
 
-#INCLUDE_DIRECTORIES(${FTD_INCLUDE_DIRS} ${OPENCV_INCLUDE_DIRS} ${IW_INCLUDE_DIRS})
-#LINK_DIRECTORIES(${FTD_LIBRARY_DIRS} ${OPENCV_LIBRARY_DIRS} ${IW_LIBRARY_DIRS})
-ADD_LIBRARY(tidelog MODULE ${LIBTIDELOG_SOURCES})
-#TARGET_LINK_LIBRARIES(${DISCRETIZER_PLUGIN} ${FTD_LIBRARIES} ${OPENCV_LIBRARIES} ${IW_LIBRARIES})
-#SET_TARGET_PROPERTIES(${DISCRETIZER_PLUGIN} PROPERTIES INSTALL_RPATH ${LIBDIR})
-INSTALL(TARGETS tidelog LIBRARY DESTINATION ${LIBDIR})
+include_directories(lib)
+link_directories(lib)
+add_subdirectory(test)
 
 
