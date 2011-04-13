@@ -40,6 +40,7 @@ namespace tide { namespace log {
 		TIDELog(const TIDELog&); // not implemented to prevent copying
 		void write_small(uint8_t size, const void* data);
 		void write_array(uint32_t size, const void* data);
+		void writeHeader(const char tag[4], uint64_t size);
 		void writeTIDE();
 	public:
 		TIDELog(const std::string& logfile_name);
