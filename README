@@ -1,0 +1,21 @@
+This is a proof-of-concept implementation of the Robot
+Engineering Task Force's (RETF) Time-Indexed Data Entry (TIDE)
+log container format.
+
+Dependencies
+------------
+
+To build, you need at least CMake 2.6 -- see http://www.cmake.org/
+Also, a C++ compiler is needed. This code has been tested with gcc 4.4
+
+Building
+--------
+
+This project uses a regular CMake build, so you can just do 
+"cmake . ; make". However I recommend building in a subdir. To
+use that, do
+	$ mdkir build
+	$ cd build
+	$ cmake ..
+	$ make
+
