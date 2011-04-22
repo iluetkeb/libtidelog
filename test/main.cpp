@@ -19,7 +19,7 @@ int main(int argc, char* argv[])
         0, 0, 0, 0, // num_chunks
         // CHANNEL
         'C', 'H', 'A', 'N',
-        55, 0, 0, 0,
+        43, 0, 0, 0,
         0, 0, 0, 0,
         1, 0, 0, 0, // channel id
         6, // name size
