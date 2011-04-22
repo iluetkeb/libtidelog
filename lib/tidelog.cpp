@@ -43,6 +43,9 @@ namespace tide {
         BufferReference::BufferReference(const char* bytes, const uint64_t length, const uint64_t offset) :
         bytes(bytes), length(length), offset(offset) {
         }
+        BufferReference::BufferReference(const char* string) :
+        bytes(string), length(strlen(string)), offset(0) {
+        }
 
         TIDELog::TIDELog(const std::string& logfile_name) : current_chunk(NULL) {
             logfile = fopen(logfile_name.c_str(), "wb");

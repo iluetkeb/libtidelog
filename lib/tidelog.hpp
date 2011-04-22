@@ -22,6 +22,7 @@ namespace tide { namespace log {
 	class BufferReference {
 	public:
 		BufferReference(const char* bytes, const uint64_t length, const uint64_t offset);
+		BufferReference(const char* null_terminated_string);
 
 		const char* bytes;
 		const uint64_t length;
