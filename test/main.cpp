@@ -8,10 +8,11 @@ using namespace std;
 
 int main(int argc, char* argv[])
 {
+    unsigned int length = 77;
     const unsigned char expected[]  = {
         // FILE HEADER
         'T', 'I', 'D', 'E', 
-        78, 0, 0, 0, // size 1-4
+        length, 0, 0, 0, // size 1-4
         0, 0, 0, 0, // size, 5-8
         1, 0,  // major/minor
         0, 0, 0, 0, // num chans
@@ -44,9 +45,9 @@ int main(int argc, char* argv[])
     } catch(const std::exception& ex) {
         cerr << ex.what() << endl;
     }
-    for(int i = 0; i < 14; ++i) {
+    for(unsigned int i = 0; i < length; ++i) {
         if(expected[i] != buf[i]) {
-            cerr << "mismatch at " << i << ": " << (int)buf[i] << " != " << (int)expected[i] << endl;
+            cerr << "mismatch at " << i << ": actual " << (int)buf[i] << " != " << (int)expected[i] << endl;
         }
     }
     
