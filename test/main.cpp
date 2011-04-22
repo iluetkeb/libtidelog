@@ -15,7 +15,7 @@ int main(int argc, char* argv[])
         length, 0, 0, 0, // size 1-4
         0, 0, 0, 0, // size, 5-8
         1, 0,  // major/minor
-        0, 0, 0, 0, // num chans
+        1, 0, 0, 0, // num chans
         0, 0, 0, 0, // num_chunks
         // CHANNEL
         'C', 'H', 'A', 'N',
