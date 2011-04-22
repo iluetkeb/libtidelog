@@ -60,7 +60,7 @@ namespace tide {
             const uint32_t size;
             const void* data;
 
-            Array(const uint32_t size, const void* data) : size(size), data(data) {
+            Array(const uint32_t _size, const void* _data) : size(_size), data(_data) {
             };
         };
 
@@ -68,7 +68,7 @@ namespace tide {
             const uint8_t size;
             const void* data;
 
-            SArray(const uint8_t size, const void* data) : size(size), data(data) {
+            SArray(const uint8_t _size, const void* _data) : size(_size), data(_data) {
             };
         };
     }
