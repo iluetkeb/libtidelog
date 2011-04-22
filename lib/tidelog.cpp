@@ -86,7 +86,8 @@ namespace tide {
         template<>
         void TIDELog::write_checked<timeval>(const timeval& tv, const char* name) {
             uint64_t timestamp = ((uint64_t) tv.tv_sec * 10e6) + (uint64_t) tv.tv_usec;
-            check_io(TIMESTAMP_SIZE, fwrite(&timestamp, sizeof (timestamp), 1, logfile), "timeval");
+            assert(sizeof(uint64_t) == 8);
+            check_io(1, fwrite(&timestamp, sizeof (timestamp), 1, logfile), "timeval");
         }
 
         void TIDELog::writeTIDE() {
