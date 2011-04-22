@@ -47,14 +47,14 @@ namespace tide {
         bytes(string), length(strlen(string)), offset(0) {
         }
 
-        TIDELog::TIDELog(const std::string& logfile_name) : current_chunk(NULL) {
+        TIDELog::TIDELog(const std::string& logfile_name) : num_chunks(0), current_chunk(NULL) {
             logfile = fopen(logfile_name.c_str(), "wb");
             if (logfile == NULL) {
                 throw IOException(strerror(errno));
             }
             writeTIDE();
         }
-        TIDELog::TIDELog(FILE* stream) : logfile(stream), current_chunk(NULL) {
+        TIDELog::TIDELog(FILE* stream) : logfile(stream), num_chunks(0), current_chunk(NULL) {
             if (logfile == NULL) {
                 throw IllegalArgumentException("Stream must not be null");
             }
