@@ -75,15 +75,17 @@ namespace tide {
         }
 
         template<>
-        inline void TIDELog::write_checked<SArray>(const SArray& data, const char* name) {
-            check_io(1, fwrite(&(data.size), sizeof (data.size), 1, logfile), "small array size field");
-            check_io(1, fwrite(&data, data.size, 1, logfile), name);
+        inline void TIDELog::write_checked<SArray>(const SArray& array, const char* name) {
+            assert(1 == sizeof(array.size));
+            check_io(1, fwrite(&(array.size), sizeof (array.size), 1, logfile), "small array size field");
+            check_io(1, fwrite(array.data, array.size, 1, logfile), name);
         }
 
         template<>
-        inline void TIDELog::write_checked<Array>(const Array& data, const char* name) {
-            check_io(1, fwrite(&(data.size), sizeof (data.size), 1, logfile), "array size field");
-            check_io(1, fwrite(&data, data.size, 1, logfile), name);
+        inline void TIDELog::write_checked<Array>(const Array& array, const char* name) {
+            assert(4 == sizeof(array.size));
+            check_io(1, fwrite(&(array.size), sizeof (array.size), 1, logfile), "array size field");
+            check_io(1, fwrite(array.data, array.size, 1, logfile), name);
         }
 
         template<>
@@ -143,19 +145,21 @@ namespace tide {
 
             // header
             HEADER hdr = {
-                { 'C', 'H', 'A', 'N'}, 4 + 1 + name.length() + 10 + 1 + source.length() + source_spec.length + fmt_spec.length + 4
+                { 'C', 'H', 'A', 'N'}, 4 + 1 + name.length() + 10 + 1 + 
+                        source.length() + 1 + source_spec.length + 4 + fmt_spec.length + 4
             };
+            unsigned char typebuf[10];
+            memset(typebuf, 0, 10);
             write_checked<HEADER,HDR_SIZE>(hdr);
 
             // ID
             const uint32_t id = channel_sizes.size() + 1;
-            check_io(1, fwrite(&id, 4, 1, logfile), "id");
+            check_io(1, fwrite(&id, sizeof(id), 1, logfile), "id");
             // name
             write_checked(SArray(name.length(), name.c_str()));
             // type
-            check_io(type.length(), fwrite(type.c_str(), 1, type.length(), logfile), "type");
-            for(int i = type.length(); i < 10; ++i)
-                check_io(0, fputc('\0', logfile), "filler");
+            memcpy(typebuf, type.c_str(), type.length());
+            check_io(1, fwrite(typebuf, 10, 1, logfile), "type");
             // human-readable source description
             write_checked(SArray(source.length(), source.c_str()));
             // source string
