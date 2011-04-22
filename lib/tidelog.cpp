@@ -149,7 +149,7 @@ namespace tide {
 
             // ID
             const uint32_t id = channel_sizes.size() + 1;
-            check_io(4, fwrite(&id, 4, 1, logfile), "id");
+            check_io(1, fwrite(&id, 4, 1, logfile), "id");
             // name
             write_checked(SArray(name.length(), name.c_str()));
             // type
@@ -161,7 +161,7 @@ namespace tide {
             // format spec
             write_checked(Array(fmt_spec.length, fmt_spec.bytes + fmt_spec.offset));
             // data size
-            check_io(4, fwrite(&data_size, 4, 1, logfile), "flush");
+            check_io(1, fwrite(&data_size, 4, 1, logfile), "flush");
 
             fflush(logfile);
 
