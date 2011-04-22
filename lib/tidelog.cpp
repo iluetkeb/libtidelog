@@ -153,7 +153,9 @@ namespace tide {
             // name
             write_checked(SArray(name.length(), name.c_str()));
             // type
-            write_checked(SArray(std::max((size_t) 10, type.length()), type.c_str()));
+            check_io(type.length(), fwrite(type.c_str(), 1, type.length(), logfile), "type");
+            for(int i = type.length(); i < 10; ++i)
+                check_io(0, fputc('\0', logfile), "filler");
             // human-readable source description
             write_checked(SArray(source.length(), source.c_str()));
             // source string
