@@ -61,36 +61,41 @@ namespace tide { namespace log {
 		Chunk *current_chunk;
 
 		TIDELog(const TIDELog&); // not implemented to prevent copying
-		void write_small(uint8_t size, const void* data);
-		void write_array(uint32_t size, const void* data);
-		void write_timestamp(const timeval& tv);
-		void writeHeader(const char tag[4], uint64_t size);
+
+		template<typename T, unsigned int SIZE> inline void write_checked(const T& data, const char* name = "<unspecified>");
+		/* special template for partial specialization with known types. if you get "undefined symbol", use the above instead. */
+                template<typename T> inline void write_checked(const T& data, const char* name = "<unspecified>");
+	
 		void writeTIDE();
 		void writeCHUNK();
 		void start_chunk();
 		void finish_chunk();
 	public:
 		TIDELog(const std::string& logfile_name);
+		TIDELog(FILE* stream);
 		~TIDELog();
 
 		Channel writeCHAN(const std::string& name, const std::string& type, const std::string& fmt_description, 
 			const BufferReference& source_spec, const BufferReference& fmt_spec, uint32_t data_size);
 	};
 
-	class IOException : public std::exception {
-	private:
-		const std::string& msg;
+        class TIDEException : public std::exception {
+        private:
+            const std::string msg;
+        public:
+            TIDEException(const std::string&);
+            ~TIDEException() throw();
+            virtual const char* what() const throw();
+        };
+        
+	class IOException : public TIDEException {
 	public:
 		IOException(const std::string& msg);
-		const char* what() throw();
 	};
 
-	class IllegalArgumentException : public std::exception {
-	private:
-		const std::string& msg;
+	class IllegalArgumentException : public TIDEException {
 	public:
 		IllegalArgumentException(const std::string& msg);
-		const char* what() throw();
 	};
 
 

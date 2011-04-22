@@ -1,0 +1,11 @@
+/nbproject/private/
+/build/CMakeFiles/
+/build/lib/
+/build/test/
+*~
+*.o
+*.so
+*.cmake
+CMake*
+Makefile
+test/test_tidelog
