@@ -76,7 +76,7 @@ namespace tide { namespace log {
 		TIDELog(FILE* stream);
 		~TIDELog();
 
-		Channel writeCHAN(const std::string& name, const std::string& type, const std::string& fmt_description, 
+		Channel writeCHAN(const std::string& name, const std::string& type, const std::string& source,
 			const BufferReference& source_spec, const BufferReference& fmt_spec, uint32_t data_size);
 	};
 

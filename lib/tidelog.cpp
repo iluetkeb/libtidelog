@@ -132,18 +132,18 @@ namespace tide {
             check_io(1, fputc(0, logfile), "flush");
         }
 
-        Channel TIDELog::writeCHAN(const std::string& name, const std::string& type, const std::string& fmt_description,
+        Channel TIDELog::writeCHAN(const std::string& name, const std::string& type, const std::string& source,
                 const BufferReference& source_spec, const BufferReference& fmt_spec, uint32_t data_size) {
             // argument checking
             check_bounds("name", 256, name.length());
             check_bounds("type", 10, type.length());
-            check_bounds("fmt_description", 256, fmt_description.length());
+            check_bounds("source", 256, source.length());
             check_bounds("source_spec", 256, source_spec.length);
             check_bounds("fmt_spec", UINT_MAX, fmt_spec.length);
 
             // header
             HEADER hdr = {
-                { 'C', 'H', 'A', 'N'}, 4 + 1 + name.length() + 10 + 1 + fmt_description.length() + source_spec.length + fmt_spec.length + 4
+                { 'C', 'H', 'A', 'N'}, 4 + 1 + name.length() + 10 + 1 + source.length() + source_spec.length + fmt_spec.length + 4
             };
             write_checked<HEADER,HDR_SIZE>(hdr);
 
@@ -155,7 +155,7 @@ namespace tide {
             // type
             write_checked(SArray(std::max((size_t) 10, type.length()), type.c_str()));
             // human-readable source description
-            write_checked(SArray(fmt_description.length(), fmt_description.c_str()));
+            write_checked(SArray(source.length(), source.c_str()));
             // source string
             write_checked(SArray(source_spec.length, source_spec.bytes + source_spec.offset));
             // format spec
