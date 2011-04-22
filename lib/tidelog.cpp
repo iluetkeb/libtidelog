@@ -90,9 +90,10 @@ namespace tide {
         }
 
         void TIDELog::writeTIDE() {
+            int pos = ftell(logfile);
             fseek(logfile, 0, SEEK_SET);
             HEADER hdr = {
-                { 'T', 'I', 'D', 'E'}, -1
+                { 'T', 'I', 'D', 'E'}, pos
             };
 
             write_checked<HEADER,HDR_SIZE>(hdr, "TIDE header");
