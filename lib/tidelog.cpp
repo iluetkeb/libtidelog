@@ -6,6 +6,7 @@
 #include <limits.h>
 #include <iostream>
 #include <cassert>
+#include <sys/uio.h>
 
 #include "tidestruct.hpp"
 
@@ -40,13 +41,6 @@ namespace tide {
             const unsigned char TIDE_VERSION[] = {1, 0};
         }
 
-        BufferReference::BufferReference(const char* bytes, const uint64_t length, const uint64_t offset) :
-        bytes(bytes), length(length), offset(offset) {
-        }
-        BufferReference::BufferReference(const char* string) :
-        bytes(string), length(strlen(string)), offset(0) {
-        }
-
         TIDELog::TIDELog(const std::string& logfile_name) : num_chunks(0), current_chunk(NULL) {
             logfile = fopen(logfile_name.c_str(), "wb");
             if (logfile == NULL) {
@@ -76,16 +70,13 @@ namespace tide {
 
         template<>
         inline void TIDELog::write_checked<SArray>(const SArray& array, const char* name) {
-            assert(1 == sizeof(array.size));
-            check_io(1, fwrite(&(array.size), sizeof (array.size), 1, logfile), "small array size field");
-            check_io(1, fwrite(array.data, array.size, 1, logfile), name);
+            check_io(1, fwrite(&(array.length), sizeof (array.length), 1, logfile), "size field");
+            check_io(1, fwrite(array.bytes, array.length, 1, logfile), name);
         }
-
         template<>
         inline void TIDELog::write_checked<Array>(const Array& array, const char* name) {
-            assert(4 == sizeof(array.size));
-            check_io(1, fwrite(&(array.size), sizeof (array.size), 1, logfile), "array size field");
-            check_io(1, fwrite(array.data, array.size, 1, logfile), name);
+            check_io(1, fwrite(&(array.length), sizeof (array.length), 1, logfile), "size field");
+            check_io(1, fwrite(array.bytes, array.length, 1, logfile), name);
         }
 
         template<>
@@ -135,7 +126,7 @@ namespace tide {
         }
 
         Channel TIDELog::writeCHAN(const std::string& name, const std::string& type, const std::string& source,
-                const BufferReference& source_spec, const BufferReference& fmt_spec, uint32_t data_size) {
+                const SArray& source_spec, const Array& fmt_spec, uint32_t data_size) {
             // argument checking
             check_bounds("name", 256, name.length());
             check_bounds("type", 10, type.length());
@@ -156,16 +147,16 @@ namespace tide {
             const uint32_t id = channel_sizes.size() + 1;
             check_io(1, fwrite(&id, sizeof(id), 1, logfile), "id");
             // name
-            write_checked(SArray(name.length(), name.c_str()));
+            write_checked(SArray(name.c_str(), name.length()), "name");
             // type
             memcpy(typebuf, type.c_str(), type.length());
             check_io(1, fwrite(typebuf, 10, 1, logfile), "type");
             // human-readable source description
-            write_checked(SArray(source.length(), source.c_str()));
+            write_checked(SArray(source.c_str(), source.length()), "source");
             // source string
-            write_checked(SArray(source_spec.length, source_spec.bytes + source_spec.offset));
+            write_checked(source_spec, "spec");
             // format spec
-            write_checked(Array(fmt_spec.length, fmt_spec.bytes + fmt_spec.offset));
+            write_checked(fmt_spec, "format");
             // data size
             check_io(1, fwrite(&data_size, 4, 1, logfile), "flush");
 

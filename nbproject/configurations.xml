@@ -41,32 +41,15 @@
         </df>
         <df name="CompilerIdC">
           <in>CMakeCCompilerId.c</in>
-          <in>a.out</in>
         </df>
         <df name="CompilerIdCXX">
           <in>CMakeCXXCompilerId.cpp</in>
-          <in>a.out</in>
         </df>
-        <in>CMakeCCompiler.cmake</in>
-        <in>CMakeCXXCompiler.cmake</in>
-        <in>CMakeOutput.log</in>
-        <in>CMakeSystem.cmake</in>
       </df>
       <df name="lib">
         <df name="CMakeFiles">
           <df name="tidelog.dir">
-            <in>CXX.includecache</in>
-            <in>DependInfo.cmake</in>
-            <in>build.make</in>
-            <in>cmake_clean.cmake</in>
-            <in>depend.internal</in>
-            <in>depend.make</in>
-            <in>flags.make</in>
-            <in>link.txt</in>
-            <in>progress.make</in>
           </df>
-          <in>CMakeDirectoryInformation.cmake</in>
-          <in>progress.marks</in>
         </df>
         <in>exception.cpp</in>
         <in>tidelog.cpp</in>
@@ -76,16 +59,7 @@
       <df name="test">
         <df name="CMakeFiles">
           <df name="test_tidelog.dir">
-            <in>DependInfo.cmake</in>
-            <in>build.make</in>
-            <in>cmake_clean.cmake</in>
-            <in>depend.make</in>
-            <in>flags.make</in>
-            <in>link.txt</in>
-            <in>progress.make</in>
           </df>
-          <in>CMakeDirectoryInformation.cmake</in>
-          <in>progress.marks</in>
         </df>
         <in>main.cpp</in>
       </df>

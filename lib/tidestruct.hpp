@@ -55,22 +55,6 @@ namespace tide {
                 
             }
         } __attribute__((__packed__));
-
-        struct Array {
-            const uint32_t size;
-            const void* data;
-
-            Array(const uint32_t _size, const void* _data) : size(_size), data(_data) {
-            };
-        };
-
-        struct SArray {
-            const uint8_t size;
-            const void* data;
-
-            SArray(const uint8_t _size, const void* _data) : size(_size), data(_data) {
-            };
-        };
     }
 }
 

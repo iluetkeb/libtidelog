@@ -41,13 +41,15 @@ int main(int argc, char* argv[])
         FILE* streambuf = fmemopen(buf, BUFSIZE, "wb");
         
         TIDELog logf(streambuf);
-        logf.writeCHAN("MYCHAN", "MYTYPE", "MYSOURCE", BufferReference("S"), BufferReference("FMT"), 1);
+        logf.writeCHAN("MYCHAN", "MYTYPE", "MYSOURCE", SArray("S"), Array("FMT"), 1);
     } catch(const std::exception& ex) {
         cerr << ex.what() << endl;
     }
     for(unsigned int i = 0; i < length; ++i) {
         if(expected[i] != buf[i]) {
-            cerr << "mismatch at " << i << ": actual " << (int)buf[i] << " != " << (int)expected[i] << endl;
+            cerr << i << " mismatch " << ": actual " << (int)buf[i] << " != " << (int)expected[i] << endl;
+        } else {
+            cerr << i << " " << (int)buf[i] << endl;
         }
     }
     

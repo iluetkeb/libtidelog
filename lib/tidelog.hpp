@@ -3,6 +3,7 @@
 
 #include <fstream>
 #include <string>
+#include <cstring>
 #include <map>
 #include <stdint.h>
 #include <sys/time.h>
@@ -18,88 +19,94 @@
  * Copyright (c) 2011 Ingo Lütkebohle <iluetkeb@techfak.uni-bielefeld.de>, Bielefeld University
  */
 
-namespace tide { namespace log {
-	class BufferReference {
-	public:
-		BufferReference(const char* bytes, const uint64_t length, const uint64_t offset);
-		BufferReference(const char* null_terminated_string);
+namespace tide {
+    namespace log {
+        template<typename T>
+        class BufferReference {
+        public:
+            BufferReference(const char* bytes, const T length) : bytes(bytes), length(length) {};
+            BufferReference(const char* null_terminated_string) : bytes(null_terminated_string), length(strlen(null_terminated_string)){};
 
-		const char* bytes;
-		const uint64_t length;
-		const uint64_t offset;
-	};
+            const void* bytes;
+            const T length;
+        };
+        typedef BufferReference<uint8_t> SArray;
+        typedef BufferReference<uint32_t> Array;
 
-	class Channel {
-	public:
-		const int id;
-		const uint32_t data_size;
+        class Channel {
+        public:
+            const int id;
+            const uint32_t data_size;
 
-		Channel(int id, uint32_t size) : id(id), data_size(size) {};
-	};
-	class Entry {
-	public:
-		const Channel c;
-		const timeval timestamp;
-		Entry(const Channel& c, const timeval& tv);
-	};
+            Channel(int id, uint32_t size) : id(id), data_size(size) {
+            };
+        };
 
-	class Chunk {
-	public:
-		const int id, num_entries;
-		const off_t start_filepos;
-		timeval tv_start, tv_end;
-		
-		Chunk(int id, const off_t start_filepos);
+        class Entry {
+        public:
+            const Channel c;
+            const timeval timestamp;
+            Entry(const Channel& c, const timeval& tv);
+        };
 
-		void add_entry(const Entry& e);
-	};
+        class Chunk {
+        public:
+            const int id, num_entries;
+            const off_t start_filepos;
+            timeval tv_start, tv_end;
 
-	class TIDELog {
-	private:
-		FILE* logfile;
-		uint32_t num_chunks;
-		std::map<int, uint32_t> channel_sizes;
-		Chunk *current_chunk;
+            Chunk(int id, const off_t start_filepos);
 
-		TIDELog(const TIDELog&); // not implemented to prevent copying
+            void add_entry(const Entry& e);
+        };
 
-		template<typename T, unsigned int SIZE> inline void write_checked(const T& data, const char* name = "<unspecified>");
-		/* special template for partial specialization with known types. if you get "undefined symbol", use the above instead. */
-                template<typename T> inline void write_checked(const T& data, const char* name = "<unspecified>");
-	
-		void writeTIDE();
-		void writeCHUNK();
-		void start_chunk();
-		void finish_chunk();
-	public:
-		TIDELog(const std::string& logfile_name);
-		TIDELog(FILE* stream);
-		~TIDELog();
+        class TIDELog {
+        private:
+            FILE* logfile;
+            uint32_t num_chunks;
+            std::map<int, uint32_t> channel_sizes;
+            Chunk *current_chunk;
 
-		Channel writeCHAN(const std::string& name, const std::string& type, const std::string& source,
-			const BufferReference& source_spec, const BufferReference& fmt_spec, uint32_t data_size);
-	};
+            TIDELog(const TIDELog&); // not implemented to prevent copying
+
+            template<typename T, unsigned int SIZE> inline void write_checked(const T& data, const char* name = "<unspecified>");
+            /* special template for partial specialization with known types. if you get "undefined symbol", use the above instead. */
+            template<typename T> inline void write_checked(const T& data, const char* name = "<unspecified>");
+
+            void writeTIDE();
+            void writeCHUNK();
+            void start_chunk();
+            void finish_chunk();
+        public:
+            TIDELog(const std::string& logfile_name);
+            TIDELog(FILE* stream);
+            ~TIDELog();
+
+            Channel writeCHAN(const std::string& name, const std::string& type, const std::string& source,
+                    const SArray& source_spec, const Array& fmt_spec, uint32_t data_size);
+        };
 
         class TIDEException : public std::exception {
         private:
             const std::string msg;
         public:
             TIDEException(const std::string&);
-            ~TIDEException() throw();
-            virtual const char* what() const throw();
+            ~TIDEException() throw ();
+            virtual const char* what() const throw ();
         };
-        
-	class IOException : public TIDEException {
-	public:
-		IOException(const std::string& msg);
-	};
 
-	class IllegalArgumentException : public TIDEException {
-	public:
-		IllegalArgumentException(const std::string& msg);
-	};
+        class IOException : public TIDEException {
+        public:
+            IOException(const std::string& msg);
+        };
+
+        class IllegalArgumentException : public TIDEException {
+        public:
+            IllegalArgumentException(const std::string& msg);
+        };
 
 
-}}
+    }
+}
 
 #endif
