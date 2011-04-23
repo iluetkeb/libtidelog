@@ -1,4 +1,5 @@
-SET(LIBTIDELOG_SOURCES tidelog.cpp exception.cpp)
+set(CMAKE_CXX_FLAGS "-std=c++0x")
+SET(LIBTIDELOG_SOURCES tidelog.cpp chunk.cpp exception.cpp)
 ADD_LIBRARY(tidelog SHARED ${LIBTIDELOG_SOURCES})
 INSTALL(TARGETS tidelog LIBRARY DESTINATION ${LIBDIR})
 
