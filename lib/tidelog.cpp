@@ -9,6 +9,7 @@
 #include <sys/uio.h>
 
 #include "tidestruct.hpp"
+#include "chunk.hpp"
 
 namespace tide {
     namespace log {
@@ -37,7 +38,7 @@ namespace tide {
 
             const char TAG_TIDE[] = {'T', 'I', 'D', 'E'};
             const char TAG_CHAN[] = {'C', 'H', 'A', 'N'};
-            const char TAG_CHNK[] = {'C', 'H', 'N', 'K'};
+            const char TAG_CHUNK[] = {'C', 'H', 'N', 'K'};
             const unsigned char TIDE_VERSION[] = {1, 0};
         }
 
@@ -56,9 +57,8 @@ namespace tide {
         }
 
         TIDELog::~TIDELog() {
+            finish_chunk();
             writeTIDE(); // update header
-            if (current_chunk != NULL)
-                delete current_chunk;
             fclose(logfile);
         }
 
@@ -89,9 +89,7 @@ namespace tide {
         void TIDELog::writeTIDE() {
             int pos = ftell(logfile);
             fseek(logfile, 0, SEEK_SET);
-            HEADER hdr = {
-                { 'T', 'I', 'D', 'E'}, pos
-            };
+            HEADER hdr(TAG_TIDE, pos);
 
             write_checked<HEADER,HDR_SIZE>(hdr, "TIDE header");
             write_checked<TIDE,TIDE_SIZE>(TIDE(1, 0, channel_sizes.size(), num_chunks), "TIDE block");
@@ -101,27 +99,25 @@ namespace tide {
 
         void TIDELog::start_chunk() {
             finish_chunk();
+            current_chunk = new Chunk(++num_chunks, ftell(logfile));
         }
 
         void TIDELog::finish_chunk() {
             if (current_chunk == NULL)
                 return;
 
-            off_t curpos = ftell(logfile);
-            fseek(logfile, current_chunk->start_filepos, SEEK_SET);
+            const off_t curpos = ftell(logfile);
+            fseek(logfile, -current_chunk->get_size(), SEEK_CUR);
             writeCHUNK();
             fseek(logfile, curpos, SEEK_SET);
 
+            delete current_chunk;
             current_chunk = NULL;
         }
 
         void TIDELog::writeCHUNK() {
-            uint64_t size = ftello(logfile) - current_chunk->start_filepos - CHUNK_SIZE;
-            HEADER hdr = {
-                { 'C', 'H', 'N', 'K'}, size
-            };
-            write_checked<HEADER,HDR_SIZE>(hdr);
-            write_checked<CHUNK,CHUNK_SIZE>(CHUNK(current_chunk->id, current_chunk->num_entries, current_chunk->tv_start, current_chunk->tv_end, 0));
+            write_checked<HEADER,HDR_SIZE>(HEADER(TAG_CHUNK, current_chunk->get_size()));
+            write_checked<CHUNK,CHUNK_SIZE>(current_chunk->get_header());
             check_io(1, fputc(0, logfile), "flush");
         }
 
@@ -135,10 +131,9 @@ namespace tide {
             check_bounds("fmt_spec", UINT_MAX, fmt_spec.length);
 
             // header
-            HEADER hdr = {
-                { 'C', 'H', 'A', 'N'}, 4 + 1 + name.length() + 10 + 1 + 
-                        source.length() + 1 + source_spec.length + 4 + fmt_spec.length + 4
-            };
+            HEADER hdr(TAG_CHAN, 4 + 1 + name.length() + 10 + 1 + 
+                        source.length() + 1 + source_spec.length + 4 + fmt_spec.length + 4);
+
             unsigned char typebuf[10];
             memset(typebuf, 0, 10);
             write_checked<HEADER,HDR_SIZE>(hdr);
@@ -165,6 +160,14 @@ namespace tide {
             Channel c(id, data_size);
             channel_sizes[c.id] = data_size;
             return c;
+        }
+        
+        void TIDELog::write(const Channel& c, const timeval& tstamp, const Array& data) {
+            if(current_chunk == NULL) {
+                start_chunk();
+            }
+            current_chunk->update(ChunkEntry(timeval2tstamp(tstamp), data));
+            
         }
     }
 }

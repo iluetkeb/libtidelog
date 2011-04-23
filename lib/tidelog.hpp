@@ -7,6 +7,7 @@
 #include <map>
 #include <stdint.h>
 #include <sys/time.h>
+#include <list>
 
 /*
  * This is an implementation of the TIDE log format, described in https://retf.info/svn/drafts/rd-0001.txt
@@ -42,24 +43,9 @@ namespace tide {
             };
         };
 
-        class Entry {
-        public:
-            const Channel c;
-            const timeval timestamp;
-            Entry(const Channel& c, const timeval& tv);
-        };
+        class Chunk;
 
-        class Chunk {
-        public:
-            const int id, num_entries;
-            const off_t start_filepos;
-            timeval tv_start, tv_end;
-
-            Chunk(int id, const off_t start_filepos);
-
-            void add_entry(const Entry& e);
-        };
-
+        // NOTE: This class is most definitely not thread-safe. Sync before.
         class TIDELog {
         private:
             FILE* logfile;
@@ -84,6 +70,8 @@ namespace tide {
 
             Channel writeCHAN(const std::string& name, const std::string& type, const std::string& source,
                     const SArray& source_spec, const Array& fmt_spec, uint32_t data_size);
+            void write(const Channel& c, const timeval& tstamp, const Array& data);
+            
         };
 
         class TIDEException : public std::exception {

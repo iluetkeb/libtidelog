@@ -22,14 +22,17 @@
 namespace tide {
     namespace log {
         namespace {
-            inline uint64_t timestamp(const timeval& tv) {
+            inline uint64_t timeval2tstamp(const timeval& tv) {
                 return ((uint64_t) tv.tv_sec * 10e6) + (uint64_t) tv.tv_usec;
             }
         }
 
         struct HEADER {
-            unsigned char tag[4]; /* Indicates the type of block. Typically a 4-byte character string. */
-            uint64_t block_size; /* Size of the block in bytes, excluding the tag and size values. */
+            const char tag[4]; /* Indicates the type of block. Typically a 4-byte character string. */
+            const uint64_t block_size; /* Size of the block in bytes, excluding the tag and size values. */
+            
+            HEADER(const char stag[4], uint64_t block_size) : tag({stag[0], stag[1], stag[2], stag[3]}), block_size(block_size) {
+            };
         } __attribute__((__packed__));
 
         struct TIDE {
@@ -51,7 +54,12 @@ namespace tide {
 
             CHUNK(const uint32_t id, const uint32_t count, const timeval& start,
                 const timeval& end, uint8_t compression) : id(id), count(count),
-                start(timestamp(start)), end(timestamp(end)), compression(compression) {
+                start(timeval2tstamp(start)), end(timeval2tstamp(end)), compression(compression) {
+                
+            }
+            CHUNK(const uint32_t id, const uint32_t count, const uint64_t start,
+                const uint64_t end, uint8_t compression) : id(id), count(count),
+                start(start), end(end), compression(compression) {
                 
             }
         } __attribute__((__packed__));

@@ -51,6 +51,8 @@
           <df name="tidelog.dir">
           </df>
         </df>
+        <in>chunk.cpp</in>
+        <in>chunk.hpp</in>
         <in>exception.cpp</in>
         <in>tidelog.cpp</in>
         <in>tidelog.hpp</in>
