@@ -5,6 +5,7 @@
 #include <string>
 #include <cstring>
 #include <map>
+#include <vector>
 #include <stdint.h>
 #include <sys/time.h>
 #include <list>
@@ -37,11 +38,27 @@ namespace tide {
         class Channel {
         public:
             const int id;
-            const std::string name, source_name;
-            const std::vector<uint8_t> type;
+            const std::string name, source_name, type;
+        private:
+            std::vector<uint8_t> source_config, format;
             
-            Channel(int id) : id(id) {
+        public:
+            
+            Channel(int id, const std::string& name, const std::string& type,
+                const std::string& source_name, const SArray& source_spec,
+                const Array& fmt_spec) : id(id), name(name), source_name(source_name), type(type) {
+                source_config.reserve(source_spec.length);
+                memcpy(&(source_config[0]), source_spec.bytes, source_spec.length);
+                format.reserve(fmt_spec.length);
+                memcpy(&(format[0]), fmt_spec.bytes, fmt_spec.length);                
             };
+            
+            const std::vector<uint8_t>& get_source_config() const {
+                return source_config;
+            }
+            const std::vector<uint8_t>& get_format() const {
+                return format;
+            }
         };
 
         class Chunk;

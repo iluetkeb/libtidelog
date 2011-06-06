@@ -156,8 +156,7 @@ namespace tide {
 
             fflush(logfile);
 
-            Channel c(id);
-            return c;
+            return Channel(id, name, type, source, source_spec, fmt_spec);
         }
         
         void TIDELog::write(const Channel& c, const timeval& tstamp, const Array& data) {

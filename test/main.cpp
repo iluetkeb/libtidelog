@@ -8,7 +8,7 @@ using namespace std;
 
 int main(int argc, char* argv[])
 {
-    unsigned int length = 133;
+    unsigned int length = 129;
     const unsigned char expected[]  = {
         // FILE HEADER
         'T', 'I', 'D', 'E', 
@@ -31,7 +31,6 @@ int main(int argc, char* argv[])
         'S',
         3, 0, 0, 0, // fmt size
         'F', 'M', 'T',
-        1, 0, 0, 0, // data size
         'C', 'H', 'N', 'K',
         25 /* chunk hdr size */ + 16 /* field header size */ + 3 /* buffer size */, 0, 0, 0, 
         0, 0, 0, 0,
@@ -54,7 +53,7 @@ int main(int argc, char* argv[])
         FILE* streambuf = fmemopen(buf, BUFSIZE, "wb");
         
         TIDELog logf(streambuf);
-        Channel c = logf.writeCHAN("MYCHAN", "MYTYPE", "MYSOURCE", SArray("S"), Array("FMT"), 1);
+        Channel c = logf.writeCHAN("MYCHAN", "MYTYPE", "MYSOURCE", SArray("S"), Array("FMT"));
         timeval tv;
         tv.tv_sec = 0;
         tv.tv_usec = 128;
