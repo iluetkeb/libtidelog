@@ -65,9 +65,9 @@ int main(int argc, char* argv[])
     }
     for(unsigned int i = 0; i < length; ++i) {
         if(expected[i] != buf[i]) {
-            cerr << i << " mismatch " << ": actual " << (int)buf[i] << " != " << (int)expected[i] << endl;
+            cerr << i << " mismatch " << ": actual " << (int)buf[i] << "( " << (char)(buf[i]) << ") != " << (int)expected[i] << " " << (char)expected[i] << endl;
         } else {
-            cerr << i << " " << (int)buf[i] << endl;
+            cerr << i << " " << (int)buf[i] << "(" << (char)buf[i] << ")" << endl;
         }
     }
     
