@@ -30,6 +30,9 @@ namespace tide {
         uint64_t Chunk::get_size() const {
             return this->chunk_length;
         }
+        off_t Chunk::get_start() const {
+            return this->start_filepos;
+        }
         CHUNK Chunk::get_header() const {
             return CHUNK(id, num_entries, start_timestamp, end_timestamp, 0);
         }

@@ -22,6 +22,7 @@ SET(CFGDIR "${PREFIX}/etc/${CMAKE_PROJECT_NAME}")
 SET(IW_PLUGINDIR "${PREFIX}/lib/iceWing")
 
 set(CMAKE_CXX_FLAGS "-Wall -Werror")
+set(CMAKE_CPP_FLAGS "-D_FILE_OFFSET_BITS=64")
 
 ### Some Options (static and editable) ###
 #OPTION(IW_DEBUG "En-/disables iceWing debug outputs" OFF)

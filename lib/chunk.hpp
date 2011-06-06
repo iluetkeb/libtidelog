@@ -37,7 +37,8 @@ namespace tide {
             Chunk(const int id, const off_t start);
             void update(const ChunkEntry& entry);
             
-            uint64_t get_size();
+            off_t get_start() const;
+            uint64_t get_size() const;
             CHUNK get_header() const;
         };
     

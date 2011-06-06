@@ -87,8 +87,8 @@ namespace tide {
         }
 
         void TIDELog::writeTIDE() {
-            int pos = ftell(logfile);
-            fseek(logfile, 0, SEEK_SET);
+            const off_t pos = ftello(logfile);
+            fseeko(logfile, 0, SEEK_SET);
             HEADER hdr(TAG_TIDE, pos);
 
             write_checked<HEADER,HDR_SIZE>(hdr, "TIDE header");
@@ -107,10 +107,10 @@ namespace tide {
             if (current_chunk == NULL)
                 return;
 
-            const off_t curpos = ftell(logfile);
-            fseek(logfile, -current_chunk->get_size(), SEEK_CUR);
+            const off_t curpos = ftello(logfile);
+            fseeko(logfile, current_chunk->get_start(), SEEK_SET);
             writeCHUNK();
-            fseek(logfile, curpos, SEEK_SET);
+            fseeko(logfile, curpos, SEEK_SET);
 
             delete current_chunk;
             current_chunk = NULL;
