@@ -5,7 +5,7 @@
 
 namespace tide {
     namespace log {
-        ChunkEntry::ChunkEntry(const uint64_t timestamp, const Array& data) : timestamp(timestamp), length(data.length) {
+        ChunkEntry::ChunkEntry(const uint64_t timestamp, const Array& data) : timestamp(timestamp), length(sizeof(ENTRY) + 4 + data.length) {
         }            
         uint64_t ChunkEntry::get_timestamp() const {
             return timestamp;
@@ -16,8 +16,7 @@ namespace tide {
         }
         
         Chunk::Chunk(const int id, const off_t start) : id(id), start_filepos(start),
-                start_timestamp(UINT64_MAX), end_timestamp(0), chunk_length(0), num_entries(0) {
-            
+                start_timestamp(UINT64_MAX), end_timestamp(0), chunk_length(sizeof(CHUNK)), num_entries(0) {
         }
         void Chunk::update(const ChunkEntry& entry) {
             if(entry.get_timestamp() < start_timestamp)
@@ -28,12 +27,19 @@ namespace tide {
             ++num_entries;
         }
             
-        uint64_t Chunk::get_size() {
+        uint64_t Chunk::get_size() const {
             return this->chunk_length;
         }
         CHUNK Chunk::get_header() const {
             return CHUNK(id, num_entries, start_timestamp, end_timestamp, 0);
         }
 
+        std::ostream& operator<<(std::ostream& out, const Chunk& c) {
+            const CHUNK& chunk(c.get_header());
+            out << chunk.id << ' ' << chunk.count << ' ' << chunk.start
+                << ' ' << chunk.end << ' ' << chunk.compression << ' ' 
+                    << c.get_size() << std::endl;
+            return out;
+        }
     }
 }

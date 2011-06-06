@@ -9,6 +9,7 @@
 #define	CHUNK_HPP
 
 #include "tidestruct.hpp"
+#include <iosfwd>
 
 namespace tide {
     namespace log {
@@ -39,7 +40,10 @@ namespace tide {
             uint64_t get_size();
             CHUNK get_header() const;
         };
-    }
+    
+        std::ostream& operator<<(std::ostream& out, const Chunk& c);
+
+    }    
 }
 
 #endif	/* CHUNK_HPP */

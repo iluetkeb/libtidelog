@@ -63,6 +63,12 @@ namespace tide {
                 
             }
         } __attribute__((__packed__));
+        
+        struct ENTRY {
+            uint32_t channel_id;
+            uint64_t timestamp;
+            /* uint32_t size; is sent as part of the following array */
+        } __attribute__((__packed__));
     }
 }
 

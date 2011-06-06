@@ -100,6 +100,7 @@ namespace tide {
         void TIDELog::start_chunk() {
             finish_chunk();
             current_chunk = new Chunk(++num_chunks, ftell(logfile));
+            writeCHUNK();
         }
 
         void TIDELog::finish_chunk() {
@@ -118,7 +119,7 @@ namespace tide {
         void TIDELog::writeCHUNK() {
             write_checked<HEADER,HDR_SIZE>(HEADER(TAG_CHUNK, current_chunk->get_size()));
             write_checked<CHUNK,CHUNK_SIZE>(current_chunk->get_header());
-            check_io(1, fputc(0, logfile), "flush");
+            check_io(0, fflush(logfile), "flush");
         }
 
         Channel TIDELog::writeCHAN(const std::string& name, const std::string& type, const std::string& source,
@@ -166,7 +167,12 @@ namespace tide {
             if(current_chunk == NULL) {
                 start_chunk();
             }
-            current_chunk->update(ChunkEntry(timeval2tstamp(tstamp), data));
+            uint64_t time = timeval2tstamp(tstamp);
+            current_chunk->update(ChunkEntry(time, data));
+            
+            ENTRY entry = { c.id, time };
+            write_checked<ENTRY,sizeof(ENTRY)>(entry, "entry header");
+            write_checked(data);
             
         }
     }
