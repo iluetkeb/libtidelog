@@ -123,7 +123,7 @@ namespace tide {
         }
 
         Channel TIDELog::writeCHAN(const std::string& name, const std::string& type, const std::string& source,
-                const SArray& source_spec, const Array& fmt_spec) {
+                const Array& source_spec, const Array& fmt_spec) {
             // argument checking
             check_bounds("name", 256, name.length());
             check_bounds("type", 10, type.length());
@@ -132,11 +132,9 @@ namespace tide {
             check_bounds("fmt_spec", UINT_MAX, fmt_spec.length);
 
             // header
-            HEADER hdr(TAG_CHAN, 4 + 1 + name.length() + 10 + 1 + 
-                        source.length() + 1 + source_spec.length + 4 + fmt_spec.length + 4);
+            HEADER hdr(TAG_CHAN, 4 + 1 + name.length() + type.length() + 4 + 
+                        source.length() + 4 + source_spec.length + 4 + fmt_spec.length + 4);
 
-            unsigned char typebuf[10];
-            memset(typebuf, 0, 10);
             write_checked<HEADER,HDR_SIZE>(hdr);
 
             // ID
@@ -145,10 +143,9 @@ namespace tide {
             // name
             write_checked(SArray(name.c_str(), name.length()), "name");
             // type
-            memcpy(typebuf, type.c_str(), type.length());
-            check_io(1, fwrite(typebuf, 10, 1, logfile), "type");
+            write_checked(Array(type.c_str(), type.length()), "type");
             // human-readable source description
-            write_checked(SArray(source.c_str(), source.length()), "source");
+            write_checked(Array(source.c_str(), source.length()), "source");
             // source string
             write_checked(source_spec, "spec");
             // format spec

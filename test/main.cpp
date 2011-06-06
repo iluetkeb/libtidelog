@@ -8,7 +8,7 @@ using namespace std;
 
 int main(int argc, char* argv[])
 {
-    unsigned int length = 129;
+    unsigned int length = 135;
     const unsigned char expected[]  = {
         // FILE HEADER
         'T', 'I', 'D', 'E', 
@@ -19,15 +19,16 @@ int main(int argc, char* argv[])
         1, 0, 0, 0, // num_chunks
         // CHANNEL
         'C', 'H', 'A', 'N',
-        43, 0, 0, 0,
+        45, 0, 0, 0,
         0, 0, 0, 0,
         1, 0, 0, 0, // channel id
         6, // name size
         'M', 'Y', 'C', 'H', 'A', 'N',
-        'M', 'Y', 'T', 'Y', 'P', 'E', 0, 0, 0, 0,
-        8, // source string size
+        6, 0, 0, 0, // type size
+        'M', 'Y', 'T', 'Y', 'P', 'E', 
+        8, 0, 0, 0, // source name size
         'M', 'Y', 'S', 'O', 'U', 'R', 'C', 'E',
-        1, // source size 
+        1, 0, 0, 0, // source config size 
         'S',
         3, 0, 0, 0, // fmt size
         'F', 'M', 'T',
@@ -53,7 +54,7 @@ int main(int argc, char* argv[])
         FILE* streambuf = fmemopen(buf, BUFSIZE, "wb");
         
         TIDELog logf(streambuf);
-        Channel c = logf.writeCHAN("MYCHAN", "MYTYPE", "MYSOURCE", SArray("S"), Array("FMT"));
+        Channel c = logf.writeCHAN("MYCHAN", "MYTYPE", "MYSOURCE", Array("S"), Array("FMT"));
         timeval tv;
         tv.tv_sec = 0;
         tv.tv_usec = 128;
