@@ -42,14 +42,14 @@ namespace tide {
             const unsigned char TIDE_VERSION[] = {1, 0};
         }
 
-        TIDELog::TIDELog(const std::string& logfile_name) : num_chunks(0), current_chunk(NULL) {
+        TIDELog::TIDELog(const std::string& logfile_name) : num_chunks(0), num_chans(0), current_chunk(NULL) {
             logfile = fopen(logfile_name.c_str(), "wb");
             if (logfile == NULL) {
                 throw IOException(strerror(errno));
             }
             writeTIDE();
         }
-        TIDELog::TIDELog(FILE* stream) : logfile(stream), num_chunks(0), current_chunk(NULL) {
+        TIDELog::TIDELog(FILE* stream) : logfile(stream), num_chunks(0), num_chans(0), current_chunk(NULL) {
             if (logfile == NULL) {
                 throw IllegalArgumentException("Stream must not be null");
             }
@@ -92,7 +92,7 @@ namespace tide {
             HEADER hdr(TAG_TIDE, pos);
 
             write_checked<HEADER,HDR_SIZE>(hdr, "TIDE header");
-            write_checked<TIDE,TIDE_SIZE>(TIDE(1, 0, channel_sizes.size(), num_chunks), "TIDE block");
+            write_checked<TIDE,TIDE_SIZE>(TIDE(1, 0, num_chans, num_chunks), "TIDE block");
 
             check_io(0, fflush(logfile), "flush");
         }
@@ -140,7 +140,7 @@ namespace tide {
             write_checked<HEADER,HDR_SIZE>(hdr);
 
             // ID
-            const uint32_t id = channel_sizes.size() + 1;
+            const uint32_t id = ++num_chans;
             check_io(1, fwrite(&id, sizeof(id), 1, logfile), "id");
             // name
             write_checked(SArray(name.c_str(), name.length()), "name");
@@ -158,8 +158,7 @@ namespace tide {
 
             fflush(logfile);
 
-            Channel c(id, data_size);
-            channel_sizes[c.id] = data_size;
+            Channel c(id);
             return c;
         }
         

@@ -37,9 +37,10 @@ namespace tide {
         class Channel {
         public:
             const int id;
-            const uint32_t data_size;
-
-            Channel(int id, uint32_t size) : id(id), data_size(size) {
+            const std::string name, source_name;
+            const std::vector<uint8_t> type;
+            
+            Channel(int id) : id(id) {
             };
         };
 
@@ -49,8 +50,7 @@ namespace tide {
         class TIDELog {
         private:
             FILE* logfile;
-            uint32_t num_chunks;
-            std::map<int, uint32_t> channel_sizes;
+            uint32_t num_chunks, num_chans;
             Chunk *current_chunk;
 
             TIDELog(const TIDELog&); // not implemented to prevent copying
