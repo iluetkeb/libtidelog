@@ -123,7 +123,7 @@ namespace tide {
         }
 
         Channel TIDELog::writeCHAN(const std::string& name, const std::string& type, const std::string& source,
-                const SArray& source_spec, const Array& fmt_spec, uint32_t data_size) {
+                const SArray& source_spec, const Array& fmt_spec) {
             // argument checking
             check_bounds("name", 256, name.length());
             check_bounds("type", 10, type.length());
@@ -153,8 +153,6 @@ namespace tide {
             write_checked(source_spec, "spec");
             // format spec
             write_checked(fmt_spec, "format");
-            // data size
-            check_io(1, fwrite(&data_size, 4, 1, logfile), "flush");
 
             fflush(logfile);
 

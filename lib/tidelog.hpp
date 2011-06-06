@@ -69,7 +69,7 @@ namespace tide {
             ~TIDELog();
 
             Channel writeCHAN(const std::string& name, const std::string& type, const std::string& source,
-                    const SArray& source_spec, const Array& fmt_spec, uint32_t data_size);
+                    const SArray& source_spec, const Array& fmt_spec);
             void write(const Channel& c, const timeval& tstamp, const Array& data);
             
         };
