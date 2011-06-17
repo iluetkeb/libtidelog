@@ -28,7 +28,7 @@ namespace tide {
         public:
             BufferReference(const char* bytes, const T length) : bytes(bytes), length(length) {};
             BufferReference(const char* null_terminated_string) : bytes(null_terminated_string), length(strlen(null_terminated_string)){};
-
+            
             const void* bytes;
             const T length;
         };
@@ -86,7 +86,7 @@ namespace tide {
             ~TIDELog();
 
             Channel writeCHAN(const std::string& name, const std::string& type, const std::string& source,
-                    const SArray& source_spec, const Array& fmt_spec);
+                    const Array& source_spec, const Array& fmt_spec);
             void write(const Channel& c, const timeval& tstamp, const Array& data);
             
         };
